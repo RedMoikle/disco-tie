@@ -8,6 +8,10 @@ class Manager:
         self.running = run
         self.framerate = 30
 
+        self.led_count = 70
+        self.speed = 1
+        self.current_pixel = 0
+
         self.blinker = blinker
         self.options_btn = options_btn
         self.minus_btn = minus_btn
@@ -63,10 +67,22 @@ class Manager:
         self.print("drawing")
 
     def update(self):
-        pass
+        # test anim
+        self.drawer.fill((0, 0, 0))
+        self.drawer.pixels[self.current_pixel] = (255, 0, 0)
+
+        if self.current_pixel == 0 and self.speed < 0:
+            self.speed *= -1
+        elif self.current_pixel == self.led_count - 1 and self.speed > 0:
+            self.speed *= -1
+        self.current_pixel += self.speed
 
     def clear_leds(self):
         self.blinker.off()
+        if self.drawer is not None:
+            self.drawer.clear()
+            return
+        self.print("clearing")
 
     def run(self):
         self.running = True
