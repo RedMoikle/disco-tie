@@ -17,5 +17,5 @@ setup(
             "gpiozero",
             "rpi_ws281x",
         ],
-        packages=find_packages(where="src")
+        packages=find_packages(where="src/")
 )
