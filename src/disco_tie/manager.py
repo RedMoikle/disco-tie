@@ -90,4 +90,4 @@ class Manager:
 
     def shutdown(self):
         self.clear_leds()
-        os.system("sudo poweroff")
+        # os.system("sudo poweroff")
