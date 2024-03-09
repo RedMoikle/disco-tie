@@ -1,7 +1,9 @@
 from signal import pause
+
 from gpiozero import LED, Button
 from disco_tie import strandtest
 from disco_tie.manager import Manager
+from disco_tie.drawer import LightStrip
 
 BLINKER = LED(21)
 OPTIONS_BTN = Button(22)
@@ -35,12 +37,15 @@ if __name__ == "__main__":
     if OPTIONS_BTN.is_pressed and POWER_BTN.is_pressed:
         print("safe mode")
     else:
-        drawer = None
+        drawer = LightStrip(led_count=70,
+                            led_pin=18,
+                            led_frequency=800_000,
+                            overall_brightness=0.1, )
         manager = Manager(blinker=BLINKER,
                           options_btn=OPTIONS_BTN,
                           plus_btn=PLUS_BTN,
                           minus_btn=MINUS_BTN,
                           power_btn=POWER_BTN,
                           drawer=drawer)
-        strandtest.start_show(clear=True)
-        pause()
+        #strandtest.start_show(clear=True)
+        #pause()
