@@ -1,7 +1,7 @@
-import os, sys
 from signal import pause
 from gpiozero import LED, Button
 import strandtest
+from manager import Manager
 
 BLINKER = LED(21)
 OPTIONS_BTN = Button(22)
@@ -32,7 +32,12 @@ def options_pressed():
 
 
 if __name__ == "__main__":
-    POWER_BTN.when_held = shutdown
-    BLINKER.blink()
+    drawer = None
+    manager = Manager(blinker=BLINKER,
+                      options_btn=OPTIONS_BTN,
+                      plus_btn=PLUS_BTN,
+                      minus_btn=MINUS_BTN,
+                      power_btn=POWER_BTN,
+                      drawer=drawer)
     strandtest.start_show(clear=True)
     pause()
