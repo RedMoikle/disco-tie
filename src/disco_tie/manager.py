@@ -27,7 +27,7 @@ class Manager:
 
         self.deltatime = 1 / self.framerate
         self.blinker.blink()
-        self.power_btn.when_held = self.shutdown()
+        self.power_btn.when_held = self.shutdown
 
         if self.running:
             self._main_loop()
