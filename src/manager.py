@@ -82,7 +82,7 @@ class Manager:
         if self.drawer is not None:
             self.drawer.clear()
             return
-        self.print("clearing")
+        print("clearing")
 
     def run(self):
         self.running = True
