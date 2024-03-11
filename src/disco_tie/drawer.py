@@ -31,6 +31,9 @@ class LightStrip:
         self.strip.show()
 
     def set_pixel_color(self, pixel, color):
+        for channel in color:
+            if channel < 0 or channel > 1.0:
+                raise ValueError(f"Values out of range for color {color}. all 3 channels should be floats between 0.0 and 1.0")
         self.pixels[pixel] = color
 
     def fill(self, color):
