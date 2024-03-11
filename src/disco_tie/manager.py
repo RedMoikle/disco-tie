@@ -8,7 +8,7 @@ class Manager:
         self.running = run
         self.framerate = 30
 
-        self.led_count = 70
+        self.led_count = 74
         self.speed = 1
         self.current_pixel = 0
 
@@ -28,6 +28,10 @@ class Manager:
         self.deltatime = 1 / self.framerate
         self.blinker.blink()
         self.power_btn.when_held = self.shutdown
+
+        self.rainbow_offset = 0
+        self.rainbow_speed = 2
+        self.rainbow_width = self.led_count
 
         if self.running:
             self._main_loop()
@@ -69,13 +73,17 @@ class Manager:
     def update(self):
         # test anim
         self.drawer.fill((0, 0, 0))
-        self.drawer.pixels[self.current_pixel] = (255, 0, 0)
+        #self.drawer.pixels[self.current_pixel] = (255, 0, 0)
 
-        if self.current_pixel == 0 and self.speed < 0:
-            self.speed *= -1
-        elif self.current_pixel == self.led_count - 1 and self.speed > 0:
-            self.speed *= -1
-        self.current_pixel += self.speed
+        #if self.current_pixel == 0 and self.speed < 0:
+        #    self.speed *= -1
+        #elif self.current_pixel == self.led_count - 1 and self.speed > 0:
+        #    self.speed *= -1
+        #self.current_pixel += self.speed
+
+        for i in range(self.led_count):
+            self.drawer.pixels[i] = self.rainbow_offset // self.rainbow_width
+        self.rainbow_offset += self.rainbow_speed
 
     def clear_leds(self):
         self.blinker.off()
@@ -91,3 +99,13 @@ class Manager:
     def shutdown(self):
         self.clear_leds()
         # os.system("sudo poweroff")
+
+def color_wheel(pos):
+    if pos < 85:
+        return (pos * 3, 255 - pos * 3, 0)
+    elif pos < 170:
+        pos -= 85
+        return (255 - pos * 3, 0, pos * 3)
+    else:
+        pos -= 170
+        return (0, pos * 3, 255 - pos * 3)
