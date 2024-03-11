@@ -11,7 +11,7 @@ class LightStrip:
                  ):
         self.overall_brightness = overall_brightness
         self.pixels = [(0,0,0) for i in range(led_count)]
-        self.strip = Adafruit_NeoPixel(led_count, led_pin, led_frequency, 10, False,  20)
+        self.strip = Adafruit_NeoPixel(led_count, led_pin, led_frequency, 10, False,  255)
         self.strip.begin()
 
     def draw(self):
