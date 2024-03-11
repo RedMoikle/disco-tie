@@ -16,7 +16,7 @@ class LightStrip:
 
     def draw(self):
         #ensure we don't exceed the max current
-        total_brightness = sum(value for pixel in self.pixels for value in pixel) * self.overall_brightness
+        total_brightness = sum([sum(values) for values in self.pixels]) * self.overall_brightness
         total_current = SUBPIXEL_CURRENT * total_brightness
         if total_current < MAX_CURRENT:
             brightness_mult = 1.0

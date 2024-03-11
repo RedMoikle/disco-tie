@@ -37,7 +37,7 @@ if __name__ == "__main__":
     if OPTIONS_BTN.is_pressed and POWER_BTN.is_pressed:
         print("safe mode")
     else:
-        drawer = LightStrip(led_count=70,
+        drawer = LightStrip(led_count=74,
                             led_pin=18,
                             led_frequency=800_000,
                             overall_brightness=0.1, )
@@ -47,5 +47,6 @@ if __name__ == "__main__":
                           minus_btn=MINUS_BTN,
                           power_btn=POWER_BTN,
                           drawer=drawer)
+        manager.run()
         #strandtest.start_show(clear=True)
         #pause()
