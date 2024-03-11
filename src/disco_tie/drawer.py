@@ -25,7 +25,7 @@ class LightStrip:
 
         #set all pixels
         for i, pixel in enumerate(self.pixels):
-            final_pixel = tuple(int(subpixel * brightness_mult * self.overall_brightness) for subpixel in pixel)
+            final_pixel = tuple(int(subpixel * brightness_mult * self.overall_brightness * 255) for subpixel in pixel)
             self.strip.setPixelColor(i, Color(final_pixel[0], final_pixel[1], final_pixel[2]))
 
         self.strip.show()

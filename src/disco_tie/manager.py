@@ -73,7 +73,7 @@ class Manager:
     def update(self):
         # test anim
         self.drawer.fill((0, 0, 0))
-        #self.drawer.pixels[self.current_pixel] = (255, 0, 0)
+        #self.drawer.pixels[self.current_pixel] = (1.0, 0, 0)
 
         #if self.current_pixel == 0 and self.speed < 0:
         #    self.speed *= -1
@@ -102,11 +102,12 @@ class Manager:
 
 def color_wheel(pos):
     pos = pos % 256
-    if pos < 85:
-        return (pos * 3, 255 - pos * 3, 0)
-    elif pos < 170:
-        pos -= 85
-        return (255 - pos * 3, 0, pos * 3)
+    posf = pos / 255
+    if posf < 1/3:
+        return (posf * 3, 1.0 - posf * 3, 0)
+    elif posf < 2/3:
+        posf -= 1/3
+        return (1.0 - posf * 3, 0, posf * 3)
     else:
-        pos -= 170
-        return (0, pos * 3, 255 - pos * 3)
+        pos -= 2/3
+        return (0, posf * 3, 1.0 - posf * 3)
