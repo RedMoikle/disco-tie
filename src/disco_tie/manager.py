@@ -101,6 +101,7 @@ class Manager:
         # os.system("sudo poweroff")
 
 def color_wheel(pos):
+    pos = pos % 256
     if pos < 85:
         return (pos * 3, 255 - pos * 3, 0)
     elif pos < 170:
