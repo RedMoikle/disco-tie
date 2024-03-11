@@ -30,6 +30,9 @@ class LightStrip:
 
         self.strip.show()
 
+    def set_pixel_color(self, pixel, color):
+        self.pixels[pixel] = color
+
     def fill(self, color):
         self.pixels = [color for _ in self.pixels]
 

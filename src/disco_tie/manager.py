@@ -82,7 +82,7 @@ class Manager:
         #self.current_pixel += self.speed
 
         for i in range(self.led_count):
-            self.drawer.pixels[i] = color_wheel(self.rainbow_offset / self.rainbow_width)
+            self.drawer.set_pixel_color(i, color_wheel(i / self.rainbow_width + self.rainbow_offset))
         self.rainbow_offset += self.rainbow_speed
 
     def clear_leds(self):
