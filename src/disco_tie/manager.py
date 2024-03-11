@@ -30,7 +30,7 @@ class Manager:
         self.power_btn.when_held = self.shutdown
 
         self.rainbow_offset = 0
-        self.rainbow_speed = 2
+        self.rainbow_speed = 0.01
         self.rainbow_width = self.led_count
 
         if self.running:
