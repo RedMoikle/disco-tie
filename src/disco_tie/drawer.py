@@ -17,7 +17,7 @@ class LightStrip:
         self.strip.begin()
 
     def add_layer(self, alpha=0.0):
-        self.layers.append(Layer, self.led_count, alpha=alpha)
+        self.layers.append(Layer(self.led_count, alpha=alpha))
 
     def draw(self):
         #ensure we don't exceed the max current
