@@ -1,6 +1,7 @@
 import time
 import os
 
+STARTUP_TIME = time.time()
 
 class Manager:
     def __init__(self, led_count=74, blinker=None, options_btn=None, minus_btn=None, plus_btn=None, power_btn=None, drawer=None,
@@ -98,7 +99,9 @@ class Manager:
 
     def shutdown(self):
         self.clear_leds()
-        # os.system("sudo poweroff")
+        self.running = False
+        if time.time() > STARTUP_TIME + 10:
+            os.system("sudo poweroff")
 
 def color_wheel(pos):
     pos = pos % 1.0
