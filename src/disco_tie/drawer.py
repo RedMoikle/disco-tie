@@ -74,6 +74,7 @@ class Layer:
 
     def set_pixel_alpha(self, pixel_id, alpha):
         color = self.pixels[pixel_id][:3] + (alpha,)
+        self.pixels[pixel_id] = color
 
     def __add__(self, other):
         if not isinstance(other, Layer):
