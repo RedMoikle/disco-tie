@@ -3,12 +3,12 @@ import os
 
 
 class Manager:
-    def __init__(self, blinker=None, options_btn=None, minus_btn=None, plus_btn=None, power_btn=None, drawer=None,
+    def __init__(self, led_count=74, blinker=None, options_btn=None, minus_btn=None, plus_btn=None, power_btn=None, drawer=None,
                  run=False):
         self.running = run
         self.framerate = 30
 
-        self.led_count = 74
+        self.led_count = led_count
         self.speed = 1
         self.current_pixel = 0
 

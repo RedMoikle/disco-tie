@@ -37,16 +37,23 @@ if __name__ == "__main__":
     if OPTIONS_BTN.is_pressed and POWER_BTN.is_pressed:
         print("safe mode")
     else:
-        drawer = LightStrip(led_count=74,
+        strip = LightStrip(led_count=72,
                             led_pin=18,
                             led_frequency=800_000,
-                            overall_brightness=0.1, )
-        manager = Manager(blinker=BLINKER,
+                            overall_brightness=1.0, )
+        manager = Manager(led_count=72,
+                          blinker=BLINKER,
                           options_btn=OPTIONS_BTN,
                           plus_btn=PLUS_BTN,
                           minus_btn=MINUS_BTN,
                           power_btn=POWER_BTN,
-                          drawer=drawer)
+                          drawer=strip)
+        strip.add_layer()
+        options_layer = strip.layers[1]
+        for i in range(6):
+            options_layer.set_pixel_alpha(i, 1.0)
+        for i in range(4):
+            options_layer.set_pixel_color(i, (1.0, 1.0, 1.0))
         manager.run()
         #strandtest.start_show(clear=True)
         #pause()

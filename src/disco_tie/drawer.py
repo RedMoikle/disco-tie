@@ -15,7 +15,7 @@ class LightStrip:
         self.strip = Adafruit_NeoPixel(led_count, led_pin, led_frequency, 10, False,  255)
         self.strip.begin()
 
-    def add_layer(self, alpha=0.1):
+    def add_layer(self, alpha=0.0):
         self.layers.append(Layer, len(self.layers[0]), alpha=alpha)
 
     def draw(self):
