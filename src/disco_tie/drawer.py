@@ -85,7 +85,7 @@ class Layer:
             other_color = other.pixels[i]
             this_component = (ch * (1 - other_color[3]) for ch in color[:3])
             other_component = (ch * other_color[3] for ch in other_color[:3])
-            result.pixels[i] = (ch + other_component[j] for j, ch in enumerate(this_component)) + (color[3],)
+            result.pixels[i] = tuple(ch + other_component[j] for j, ch in enumerate(this_component)) + (color[3],)
         return result
 
     def __getitem__(self, index):
