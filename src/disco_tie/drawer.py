@@ -41,6 +41,9 @@ class LightStrip:
     def set_pixel_color(self, pixel_id, color, layer=0):
         self.layers[layer].set_pixel_color(pixel_id, color)
 
+    def fill(self, color, layer=0):
+        self.layers[layer].fill(color)
+
     def clear(self):
         for layer in self.layers:
             layer.clear()
