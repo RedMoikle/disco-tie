@@ -85,6 +85,10 @@ class Manager:
         for i in range(self.led_count):
             self.drawer.set_pixel_color(i, color_wheel(i / self.rainbow_width + self.rainbow_offset))
         self.rainbow_offset += self.rainbow_speed
+        opt = self.drawer.layers[1]
+        print(opt[0:10])
+        res = self.drawer.layers[0] + self.drawer.layers[1]
+        print(res[0:10])
 
     def clear_leds(self):
         self.blinker.off()
