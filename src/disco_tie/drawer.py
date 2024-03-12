@@ -10,13 +10,20 @@ class LightStrip:
                  overall_brightness = 0.1,
                  ):
         self.overall_brightness = overall_brightness
-        self.pixels = [(0,0,0) for i in range(led_count)]
+        self.layers = [Layer(led_count)]
+        # self.pixels = [(0,0,0) for i in range(led_count)]
         self.strip = Adafruit_NeoPixel(led_count, led_pin, led_frequency, 10, False,  255)
         self.strip.begin()
 
+    def add_layer(self, alpha=0.1):
+        self.layers.append(Layer, len(self.layers[0]), alpha=alpha)
+
     def draw(self):
         #ensure we don't exceed the max current
-        total_brightness = sum([sum(values) for values in self.pixels]) * self.overall_brightness
+        result_layer = self.layers[0]
+        for layer in self.layers[1:]:
+            result_layer = result_layer + layer
+        total_brightness = result_layer.sum_brightness() * self.overall_brightness
         total_current = SUBPIXEL_CURRENT * total_brightness
         if total_current < MAX_CURRENT:
             brightness_mult = 1.0
@@ -24,29 +31,24 @@ class LightStrip:
             brightness_mult = MAX_CURRENT / total_current
 
         #set all pixels
-        for i, pixel in enumerate(self.pixels):
-            final_pixel = tuple(int(subpixel * brightness_mult * self.overall_brightness * 255) for subpixel in pixel)
+        for i, pixel in enumerate(result_layer):
+            final_pixel = tuple(int(subpixel * brightness_mult * self.overall_brightness * 255) for subpixel in pixel[:3])
             self.strip.setPixelColor(i, Color(final_pixel[0], final_pixel[1], final_pixel[2]))
 
         self.strip.show()
 
-    def set_pixel_color(self, pixel, color):
-        for channel in color:
-            if channel < 0 or channel > 1.0:
-                raise ValueError(f"Values out of range for color {color}. all 3 channels should be floats between 0.0 and 1.0")
-        self.pixels[pixel] = color
-
-    def fill(self, color):
-        self.pixels = [color for _ in self.pixels]
+    def set_pixel_color(self, pixel_id, color, layer=0):
+        self.layers[layer].set_pixel_color(pixel_id, color)
 
     def clear(self):
-        self.fill((0,0,0))
+        for layer in self.layers:
+            layer.clear()
         self.draw()
 
 
 class Layer:
-    def __init__(self, num_pixels):
-        self.pixels = [(0.0, 0.0, 0.0, 1.0) for i in range(num_pixels)]
+    def __init__(self, num_pixels, alpha = 1.0):
+        self.pixels = [(0.0, 0.0, 0.0, alpha) for i in range(num_pixels)]
 
     def set_pixel_color(self, pixel_id, color):
         if len(color) < 4:
@@ -81,3 +83,9 @@ class Layer:
             other_component = (ch * other_color[3] for ch in other_color[:3])
             result.pixels[i] = (ch + other_component[j] for j, ch in enumerate(this_component)) + (color[3],)
         return result
+
+    def __getitem__(self, index):
+        return self.pixels[index]
+
+    def sum_brightness(self):
+        return sum([sum(color[:3]) for color in self.pixels])
