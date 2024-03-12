@@ -42,3 +42,42 @@ class LightStrip:
     def clear(self):
         self.fill((0,0,0))
         self.draw()
+
+
+class Layer:
+    def __init__(self, num_pixels):
+        self.pixels = [(0.0, 0.0, 0.0, 1.0) for i in range(num_pixels)]
+
+    def set_pixel_color(self, pixel_id, color):
+        if len(color) < 4:
+            alpha = self.pixels[pixel_id][3]
+            color = (color[0], color[1], color[2], alpha)
+
+        for channel in color:
+            if channel < 0 or channel > 1.0:
+                raise ValueError(f"Values out of range for color {color}. all channels should be floats between 0.0 and 1.0")
+
+        self.pixels[pixel_id] = color
+
+    def fill(self, color):
+        for i, _ in enumerate(self.pixels):
+            self.set_pixel_color(i, color)
+
+    def clear(self):
+        self.fill(0.0, 0.0, 0.0)
+
+    def set_pixel_alpha(self, pixel_id, alpha):
+        color = self.pixels[pixel_id][:3] + (alpha,)
+
+    def __add__(self, other):
+        if not isinstance(other, Layer):
+            raise TypeError(f"Can only add Layers to other Layers, (not {type(other)})")
+        if len(self) != len(other):
+            raise KeyError(f"Both Layers should have the same size, ({len(self.pixels)} vs {len(other.pixels)})")
+        result = Layer(len(self.pixels))
+        for i, color in enumerate(self.pixels):
+            other_color = other.pixels[i]
+            this_component = (ch * (1 - other_color[3]) for ch in color[:3])
+            other_component = (ch * other_color[3] for ch in other_color[:3])
+            result.pixels[i] = (ch + other_component[j] for j, ch in enumerate(this_component)) + (color[3],)
+        return result
