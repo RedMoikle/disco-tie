@@ -1,7 +1,7 @@
 from rpi_ws281x import *
 
-MAX_CURRENT = 2000
-SUBPIXEL_CURRENT = 20
+MAX_CURRENT = 800
+SUBPIXEL_CURRENT = 15
 class LightStrip:
     def __init__(self,
                  led_count=70,
