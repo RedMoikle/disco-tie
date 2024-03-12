@@ -88,7 +88,6 @@ class Manager:
         opt = self.drawer.layers[1]
         print(opt[0:10])
         res = self.drawer.layers[0] + self.drawer.layers[1]
-        print(res[0:10])
 
     def clear_leds(self):
         self.blinker.off()
