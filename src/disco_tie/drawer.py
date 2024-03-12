@@ -78,7 +78,7 @@ class Layer:
     def __add__(self, other):
         if not isinstance(other, Layer):
             raise TypeError(f"Can only add Layers to other Layers, (not {type(other)})")
-        if len(self) != len(other):
+        if len(self.pixels) != len(other.pixels):
             raise KeyError(f"Both Layers should have the same size, ({len(self.pixels)} vs {len(other.pixels)})")
         result = Layer(len(self.pixels))
         for i, color in enumerate(self.pixels):
