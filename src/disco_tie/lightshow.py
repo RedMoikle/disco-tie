@@ -43,8 +43,6 @@ if __name__ == "__main__":
                           plus_btn=PLUS_BTN,
                           minus_btn=MINUS_BTN,
                           power_btn=POWER_BTN,)
-        strip.add_layer()
-        options_layer = strip.layers[1]
 
         manager.run()
         #strandtest.start_show(clear=True)
