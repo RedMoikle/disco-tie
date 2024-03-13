@@ -153,7 +153,7 @@ class Manager:
         print("Decrease")
 
     def update(self):
-        if time.time() % 2:
+        if int(time.time()) % 2:
             self.options_layer.fill((1.0, 1.0, 1.0), end=4)
         else:
             self.options_layer.fill((0.0, 0.0, 0.0), end=6)
