@@ -53,6 +53,7 @@ class Manager:
         self.rainbow_width = self.led_count
 
         self.options_active = False
+        self.options_activated = False
         self.options_setting = OPTIONS.BRIGHTNESS
         self.options_last_press_time = None
         self.options_activated_time = None
@@ -136,7 +137,6 @@ class Manager:
         print("opening options")
         self.options_active = True
         self.options_layer.fill_alpha(1.0, end=6)
-        self.options_activated_time = time.time()
 
     def close_options(self):
         print("closing options")
@@ -162,12 +162,17 @@ class Manager:
             self.options_last_press_time = time.time()
             if self.options_active:
                 self.next_setting()
-        if self.opt_held:
+
+        if self.opt_released:
+            self.options_activated = False
+
+        if self.opt_held and not self.options_activated:
             print(f"opt_timer: {time.time() - self.options_last_press_time}")
-        if self.opt_held and time.time() > self.options_last_press_time + self.options_hold_time:
+        if self.opt_held and not self.options_activated and time.time() > self.options_last_press_time + self.options_hold_time:
+            self.options_activated = True
             if not self.options_active:
                 self.open_options()
-            elif time.time() > self.options_activated_time + self.options_hold_time:
+            else:
                 self.close_options()
 
         if self.options_active:
