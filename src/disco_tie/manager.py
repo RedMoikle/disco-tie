@@ -27,8 +27,14 @@ class Manager:
         self.drawer = LightStrip()
 
         self.opt_held = False
+        self.opt_pressed = False
+        self.opt_released = False
         self.plus_held = False
+        self.plus_pressed = False
+        self.plus_released = False
         self.minus_held = False
+        self.minus_pressed = False
+        self.minus_released = False
         self.power_held = False
         self.audio_sample = None
 
@@ -81,8 +87,12 @@ class Manager:
         self.opt_held = self.options_btn.is_pressed
         if self.opt_held and not prev_opt:
             self.opt_pressed = True
+        else:
+            self.opt_pressed = False
         if not self.opt_held and prev_opt:
             self.opt_released = True
+        else:
+            self.opt_released = False
 
         self.power_held = self.power_btn.is_pressed
 
@@ -90,15 +100,23 @@ class Manager:
         self.plus_held = self.plus_btn.is_pressed
         if self.plus_held and not prev_plus:
             self.plus_pressed = True
+        else:
+            self.plus_pressed = False
         if not self.plus_held and prev_plus:
             self.plus_released = True
+        else:
+            self.plus_released = False
 
         prev_minus = self.minus_held
         self.minus_held = self.minus_btn.is_pressed
         if self.minus_held and not prev_minus:
             self.minus_pressed = True
+        else:
+            self.minus_pressed = False
         if not self.minus_held and prev_minus:
             self.minus_released = True
+        else:
+            self.minus_released = False
 
     def _get_audio(self):
         self.audio_sample = [0]
