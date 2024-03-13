@@ -133,11 +133,13 @@ class Manager:
         self.print("drawing")
 
     def open_options(self):
+        print("opening options")
         self.options_active = True
         self.options_layer.fill_alpha(1.0, end=6)
         self.options_activated_time = time.time()
 
     def close_options(self):
+        print("closing options")
         self.options_active = False
         self.options_layer.fill_alpha(0.0)
 
@@ -160,7 +162,8 @@ class Manager:
             self.options_last_press_time = time.time()
             if self.options_active:
                 self.next_setting()
-
+        if self.opt_held:
+            print(f"opt_timer: {time.time() - self.options_last_press_time}")
         if self.opt_held and time.time() > self.options_last_press_time + self.options_hold_time:
             if not self.options_active:
                 self.open_options()
