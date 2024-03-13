@@ -1,5 +1,6 @@
 import time
 import os
+from enum import Enum
 
 from disco_tie.drawer import LightStrip
 
