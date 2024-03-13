@@ -5,11 +5,14 @@ from enum import Enum
 from disco_tie.drawer import LightStrip
 
 STARTUP_TIME = time.time()
+
+
 class OPTIONS(Enum):
     BRIGHTNESS = 0
 
+
 class Manager:
-    def __init__(self, led_count=74, blinker=None, options_btn=None, minus_btn=None, plus_btn=None, power_btn=None, drawer=None,
+    def __init__(self, led_count=74, blinker=None, options_btn=None, minus_btn=None, plus_btn=None, power_btn=None,
                  run=False):
         self.running = run
         self.framerate = 30
@@ -24,7 +27,10 @@ class Manager:
         self.minus_btn = minus_btn
         self.plus_btn = plus_btn
         self.power_btn = power_btn
-        self.drawer = LightStrip()
+        self.drawer = LightStrip(led_count=led_count,
+                                 led_pin=18,
+                                 led_frequency=800_000,
+                                 overall_brightness=1.0, )
 
         self.opt_held = False
         self.opt_pressed = False
@@ -50,7 +56,6 @@ class Manager:
         self.options_setting = OPTIONS.BRIGHTNESS
         self.options_last_press_time = None
         self.options_activated_time = None
-
 
         self.main_strip = self.drawer.layers[0]
         self.knot = self.drawer.add_layer()
@@ -138,8 +143,10 @@ class Manager:
 
     def next_setting(self):
         print("next option")
+
     def increase_setting(self):
         print("Increase")
+
     def decrease_setting(self):
         print("Decrease")
 
@@ -188,13 +195,14 @@ class Manager:
         if time.time() > STARTUP_TIME + 10:
             os.system("sudo poweroff")
 
+
 def color_wheel(pos):
     pos = pos % 1.0
-    if pos < 1/3:
+    if pos < 1 / 3:
         return (pos * 3, 1.0 - pos * 3, 0)
-    elif pos < 2/3:
-        pos -= 1/3
+    elif pos < 2 / 3:
+        pos -= 1 / 3
         return (1.0 - pos * 3, 0, pos * 3)
     else:
-        pos -= 2/3
+        pos -= 2 / 3
         return (0, pos * 3, 1.0 - pos * 3)
