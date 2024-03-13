@@ -46,8 +46,10 @@ class LightStrip:
         self.layers[layer].fill(color)
 
     def clear(self):
-        for layer in self.layers:
+        for i, layer in enumerate(self.layers):
+            print(f"clearing layer {i}")
             layer.clear()
+            print(layer.pixels)
         self.draw()
 
 

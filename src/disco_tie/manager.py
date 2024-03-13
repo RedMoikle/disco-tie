@@ -207,7 +207,8 @@ class Manager:
         self.clear_leds()
         self.running = False
         if time.time() > STARTUP_TIME + 10:
-            os.system("sudo poweroff")
+            pass
+            #os.system("sudo poweroff")
 
 
 def color_wheel(pos):
