@@ -76,7 +76,7 @@ class Layer:
             self.set_pixel_alpha(i, alpha)
 
     def clear(self):
-        self.fill(0.0, 0.0, 0.0)
+        self.fill((0.0, 0.0, 0.0))
 
     def set_pixel_alpha(self, pixel_id, alpha):
         color = self.pixels[pixel_id][:3] + (alpha,)
