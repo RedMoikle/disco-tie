@@ -12,12 +12,13 @@ class LightStrip:
         self.led_count = led_count
         self.overall_brightness = overall_brightness
         self.layers = [Layer(led_count)]
-        # self.pixels = [(0,0,0) for i in range(led_count)]
         self.strip = Adafruit_NeoPixel(led_count, led_pin, led_frequency, 10, False,  255)
         self.strip.begin()
 
     def add_layer(self, alpha=0.0):
         self.layers.append(Layer(self.led_count, alpha=alpha))
+
+        return self.layers[-1]
 
     def draw(self):
         #ensure we don't exceed the max current
@@ -51,7 +52,8 @@ class LightStrip:
 
 
 class Layer:
-    def __init__(self, num_pixels, alpha = 1.0):
+    def __init__(self, num_pixels, alpha = 1.0, preserve=False):
+        self.preserve = preserve
         self.pixels = [(0.0, 0.0, 0.0, alpha) for i in range(num_pixels)]
 
     def set_pixel_color(self, pixel_id, color):
@@ -65,9 +67,13 @@ class Layer:
 
         self.pixels[pixel_id] = color
 
-    def fill(self, color):
-        for i, _ in enumerate(self.pixels):
+    def fill(self, color, start=None, end=None, step=None):
+        for i, _ in enumerate(self.pixels[start:end:step]):
             self.set_pixel_color(i, color)
+
+    def fill_alpha(self, alpha, start=None, end=None, step=None):
+        for i, _ in enumerate(self.pixels[start:end:step]):
+            self.set_pixel_alpha(i, alpha)
 
     def clear(self):
         self.fill(0.0, 0.0, 0.0)

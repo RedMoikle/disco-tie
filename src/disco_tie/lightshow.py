@@ -50,10 +50,7 @@ if __name__ == "__main__":
                           drawer=strip)
         strip.add_layer()
         options_layer = strip.layers[1]
-        for i in range(6):
-            options_layer.set_pixel_alpha(i, 1.0)
-        for i in range(4):
-            options_layer.set_pixel_color(i, (1.0, 1.0, 1.0))
+
         manager.run()
         #strandtest.start_show(clear=True)
         #pause()
