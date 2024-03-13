@@ -148,9 +148,17 @@ class Manager:
 
     def increase_setting(self):
         print("Increase")
+        if self.options_setting == OPTIONS.BRIGHTNESS:
+            self.drawer.overall_brightness += 0.1
+        if self.drawer.overall_brightness > 1.0:
+            self.drawer.overall_brightness = 1.0
 
     def decrease_setting(self):
         print("Decrease")
+        if self.options_setting == OPTIONS.BRIGHTNESS:
+            self.drawer.overall_brightness -= 0.1
+        if self.drawer.overall_brightness < 0.0:
+            self.drawer.overall_brightness =0.0
 
     def update(self):
         if int(time.time()) % 2:
@@ -166,8 +174,6 @@ class Manager:
         if self.opt_released:
             self.options_activated = False
 
-        if self.opt_held and not self.options_activated:
-            print(f"opt_timer: {time.time() - self.options_last_press_time}")
         if self.opt_held and not self.options_activated and time.time() > self.options_last_press_time + self.options_hold_time:
             self.options_activated = True
             if not self.options_active:
