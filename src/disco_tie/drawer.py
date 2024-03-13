@@ -49,7 +49,6 @@ class LightStrip:
         for i, layer in enumerate(self.layers):
             print(f"clearing layer {i}")
             layer.clear()
-            print(layer.pixels)
         self.draw()
 
 
