@@ -48,7 +48,7 @@ class Option:
 
     def init_setting(self):
         self.load_setting()
-        self.init_func()
+        self.init_func(self.value)
 
     def increase(self):
         self.value += 1
