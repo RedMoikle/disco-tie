@@ -1,27 +1,45 @@
 import time
 import os
+from enum import Enum
+
+from disco_tie.drawer import LightStrip
+from disco_tie.options import Option
+STARTUP_TIME = time.time()
+
+MODE_COLORS = {0:(1,1,1)}
 
 
 class Manager:
-    def __init__(self, blinker=None, options_btn=None, minus_btn=None, plus_btn=None, power_btn=None, drawer=None,
+    def __init__(self, led_count=74, blinker=None, options_btn=None, minus_btn=None, plus_btn=None, power_btn=None,
                  run=False):
         self.running = run
         self.framerate = 30
-
-        self.led_count = 74
+        self.options_hold_time = 3
+        self.min_brightness = 0.01
+        self.led_count = led_count
         self.speed = 1
         self.current_pixel = 0
-
+        self.brightness_steps = 20
         self.blinker = blinker
         self.options_btn = options_btn
         self.minus_btn = minus_btn
         self.plus_btn = plus_btn
         self.power_btn = power_btn
-        self.drawer = drawer
+        self.drawer = LightStrip(led_count=led_count,
+                                 led_pin=18,
+                                 led_frequency=800_000,
+                                 overall_brightness=1.0, )
+
 
         self.opt_held = False
+        self.opt_pressed = False
+        self.opt_released = False
         self.plus_held = False
+        self.plus_pressed = False
+        self.plus_released = False
         self.minus_held = False
+        self.minus_pressed = False
+        self.minus_released = False
         self.power_held = False
         self.audio_sample = None
 
@@ -33,6 +51,33 @@ class Manager:
         self.rainbow_speed = 0.01
         self.rainbow_width = self.led_count
 
+        self.options_active = False
+        self.options_activated = False
+        self.options_setting = 0
+        self.options_last_press_time = None
+        self.options_activated_time = None
+
+        self.main_strip = self.drawer.layers[0]
+        self.knot = self.drawer.add_layer()
+        self.options_layer = self.drawer.add_layer()
+        for i in range(6):
+            self.knot.set_pixel_alpha(i, 1.0)
+        self.set_knot_color((1.0, 1.0, 1.0))
+        self.options = []
+        self.add_option("brightness",
+                        color=(1.0, 1.0, 1.0),
+                        increase_func=self._set_brightness,
+                        decrease_func=self._set_brightness,
+                        init_func=self._set_brightness,
+                        maximum=self.brightness_steps,
+                        wrap=False)
+        self.add_option("mode",
+                        color=(1.0, 1.0, 0.0),
+                        increase_func=self._set_mode,
+                        decrease_func=self._set_mode,
+                        init_func=self._set_mode,
+                        maximum=0,
+                        wrap=True)
         if self.running:
             self._main_loop()
 
@@ -56,10 +101,40 @@ class Manager:
                 time.sleep(excess)
 
     def _get_inputs(self):
+        prev_opt = self.opt_held
         self.opt_held = self.options_btn.is_pressed
+        if self.opt_held and not prev_opt:
+            self.opt_pressed = True
+        else:
+            self.opt_pressed = False
+        if not self.opt_held and prev_opt:
+            self.opt_released = True
+        else:
+            self.opt_released = False
+
         self.power_held = self.power_btn.is_pressed
+
+        prev_plus = self.plus_held
         self.plus_held = self.plus_btn.is_pressed
+        if self.plus_held and not prev_plus:
+            self.plus_pressed = True
+        else:
+            self.plus_pressed = False
+        if not self.plus_held and prev_plus:
+            self.plus_released = True
+        else:
+            self.plus_released = False
+
+        prev_minus = self.minus_held
         self.minus_held = self.minus_btn.is_pressed
+        if self.minus_held and not prev_minus:
+            self.minus_pressed = True
+        else:
+            self.minus_pressed = False
+        if not self.minus_held and prev_minus:
+            self.minus_released = True
+        else:
+            self.minus_released = False
 
     def _get_audio(self):
         self.audio_sample = [0]
@@ -70,17 +145,67 @@ class Manager:
             return
         self.print("drawing")
 
+    def open_options(self):
+        print("opening options")
+        self.options_active = True
+        self.options_layer.fill_alpha(1.0, end=6)
+
+    def close_options(self):
+        print("closing options")
+        self.options_active = False
+        self.options_layer.fill_alpha(0.0)
+
+    def next_setting(self):
+        print("next option")
+        self.options_setting += 1
+        if self.options_setting >= len(self.options):
+            self.options_setting = 0
+
+    def increase_setting(self):
+        print("Increase")
+        self.options[self.options_setting].increase()
+
+    def decrease_setting(self):
+        print("Decrease")
+        self.options[self.options_setting].decrease()
+
+    def _set_brightness(self, integer):
+        self.drawer.overall_brightness = integer/ self.brightness_steps
+        if self.drawer.overall_brightness < self.min_brightness:
+            self.drawer.overall_brightness = self.min_brightness
+
+    def _set_mode(self, mode_num):
+        self.set_knot_color(MODE_COLORS[mode_num])
+
     def update(self):
-        # test anim
+        if int(time.time()) % 2:
+            opt_color = self.options[self.options_setting].color
+            self.options_layer.fill(opt_color, end=4)
+        else:
+            self.options_layer.fill((0.0, 0.0, 0.0), end=6)
+
+        if self.opt_pressed:
+            self.options_last_press_time = time.time()
+            if self.options_active:
+                self.next_setting()
+
+        if self.opt_released:
+            self.options_activated = False
+
+        if self.opt_held and not self.options_activated and time.time() > self.options_last_press_time + self.options_hold_time:
+            self.options_activated = True
+            if not self.options_active:
+                self.open_options()
+            else:
+                self.close_options()
+
+        if self.options_active:
+            if self.plus_pressed:
+                self.increase_setting()
+            if self.minus_pressed:
+                self.decrease_setting()
+
         self.drawer.fill((0, 0, 0))
-        #self.drawer.pixels[self.current_pixel] = (1.0, 0, 0)
-
-        #if self.current_pixel == 0 and self.speed < 0:
-        #    self.speed *= -1
-        #elif self.current_pixel == self.led_count - 1 and self.speed > 0:
-        #    self.speed *= -1
-        #self.current_pixel += self.speed
-
         for i in range(self.led_count):
             self.drawer.set_pixel_color(i, color_wheel(i / self.rainbow_width + self.rainbow_offset))
         self.rainbow_offset += self.rainbow_speed
@@ -98,15 +223,27 @@ class Manager:
 
     def shutdown(self):
         self.clear_leds()
-        # os.system("sudo poweroff")
+        self.running = False
+        if time.time() > STARTUP_TIME + 10:
+            print("Restarting in 5 seconds")
+            time.sleep(5)
+            os.system("sudo poweroff")
+
+    def add_option(self, option_name, color, increase_func, decrease_func, init_func, maximum=10, wrap=False):
+        option = Option(option_name,color, increase_func, decrease_func, init_func, maximum, wrap)
+        self.options.append(option)
+
+    def set_knot_color(self, color):
+        for i in range(4):
+            self.knot.set_pixel_color(i, color)
 
 def color_wheel(pos):
     pos = pos % 1.0
-    if pos < 1/3:
+    if pos < 1 / 3:
         return (pos * 3, 1.0 - pos * 3, 0)
-    elif pos < 2/3:
-        pos -= 1/3
+    elif pos < 2 / 3:
+        pos -= 1 / 3
         return (1.0 - pos * 3, 0, pos * 3)
     else:
-        pos -= 2/3
+        pos -= 2 / 3
         return (0, pos * 3, 1.0 - pos * 3)
