@@ -30,6 +30,12 @@ class Option:
     def load_setting(self):
         data = self.check_settings_file()
         self.value = data["settings"][self.setting]
+        if self.value < 0:
+            self.value = 0
+            self.save_setting()
+        if self.value > self.maximum:
+            self.value = self.maximum
+            self.save_setting()
 
     def save_setting(self):
         data = self.check_settings_file()
@@ -44,7 +50,8 @@ class Option:
             if not self.wrap:
                 self.value = self.maximum
             else:
-                self.value = self.value - self.maximum - 1
+                self.value = 0
+
 
         self.save_setting()
         self.increase_func(self.value)
@@ -58,7 +65,7 @@ class Option:
             elif self.maximum is None:
                 raise ValueError("Cannot wrap values with no maximum")
             else:
-                self.value = self.maximum + self.value - 1
+                self.value = self.maximum
         print(self.value)
         self.save_setting()
         self.decrease_func(self.value)
