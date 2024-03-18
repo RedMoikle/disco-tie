@@ -56,8 +56,12 @@ class Layer:
     def __init__(self, num_pixels, alpha = 1.0, preserve=False):
         self.preserve = preserve
         self.pixels = [(0.0, 0.0, 0.0, alpha) for i in range(num_pixels)]
+        self.cleared = False
 
     def set_pixel_color(self, pixel_id, color):
+        if self.cleared:
+            print("WARNING: already cleared")
+            self.cleared = False
         if len(color) < 4:
             alpha = self.pixels[pixel_id][3]
             color = (color[0], color[1], color[2], alpha)
@@ -78,6 +82,8 @@ class Layer:
 
     def clear(self):
         self.fill((0.0, 0.0, 0.0))
+        self.cleared = True
+        print("layer cleared")
 
     def set_pixel_alpha(self, pixel_id, alpha):
         color = self.pixels[pixel_id][:3] + (alpha,)
