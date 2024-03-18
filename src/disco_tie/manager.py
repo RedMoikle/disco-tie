@@ -228,7 +228,7 @@ class Manager:
         if time.time() > STARTUP_TIME + 10:
             os.system("sudo poweroff")
 
-    def add_option(self, option_name, option_color, increase_func, decrease_func, maximum=10, wrap=False):
+    def add_option(self, option_name, color, increase_func, decrease_func, maximum=10, wrap=False):
         option = Option(option_name,option_color, increase_func, decrease_func, maximum, wrap)
         self.options.append(option)
 
