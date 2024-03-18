@@ -70,8 +70,6 @@ class BounceMode(Mode):
             else:
                 color = dot_color
             self.drawer.set_pixel_color(i, color)
-            print("Bounce")
-        print("up")
 
 def color_wheel(pos):
     pos = pos % 1.0

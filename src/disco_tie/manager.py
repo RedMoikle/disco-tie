@@ -178,7 +178,7 @@ class Manager:
             self.drawer.overall_brightness = self.min_brightness
 
     def _set_mode(self, mode_num):
-        self.mode = mode_num
+        self.selected_mode = mode_num
         self.set_knot_color(MODE_COLORS.get(mode_num, (1, 1, 1)))
         print(f"Switching to {self.modes[self.mode].name} mode")
 
