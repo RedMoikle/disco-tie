@@ -229,7 +229,7 @@ class Manager:
             os.system("sudo poweroff")
 
     def add_option(self, option_name, color, increase_func, decrease_func, maximum=10, wrap=False):
-        option = Option(option_name,option_color, increase_func, decrease_func, maximum, wrap)
+        option = Option(option_name,color, increase_func, decrease_func, maximum, wrap)
         self.options.append(option)
 
     def set_knot_color(self, color):
