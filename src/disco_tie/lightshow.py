@@ -4,6 +4,7 @@ from gpiozero import LED, Button
 from disco_tie import strandtest
 from disco_tie.manager import Manager
 from disco_tie.drawer import LightStrip
+from disco_tie.options import Option
 
 BLINKER = LED(21)
 OPTIONS_BTN = Button(22)
@@ -43,7 +44,6 @@ if __name__ == "__main__":
                           plus_btn=PLUS_BTN,
                           minus_btn=MINUS_BTN,
                           power_btn=POWER_BTN,)
-
         manager.run()
         #strandtest.start_show(clear=True)
         #pause()

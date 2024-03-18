@@ -3,9 +3,10 @@ import os
 from enum import Enum
 
 from disco_tie.drawer import LightStrip
-
+from disco_tie.options import Option
 STARTUP_TIME = time.time()
 
+MODE_COLORS = {0:(1,1,1)}
 
 class OPTIONS(Enum):
     BRIGHTNESS = 0
@@ -17,11 +18,11 @@ class Manager:
         self.running = run
         self.framerate = 30
         self.options_hold_time = 3
-
+        self.min_brightness = 0.01
         self.led_count = led_count
         self.speed = 1
         self.current_pixel = 0
-
+        self.brightness_steps = 20
         self.blinker = blinker
         self.options_btn = options_btn
         self.minus_btn = minus_btn
@@ -31,6 +32,19 @@ class Manager:
                                  led_pin=18,
                                  led_frequency=800_000,
                                  overall_brightness=1.0, )
+        self.options = []
+        self.add_option("brightness",
+                        color=(1.0, 1.0, 1.0),
+                        increase_func=self._set_brightness,
+                        decrease_func=self._set_brightness,
+                        maximum=self.brightness_steps,
+                        wrap=False)
+        self.add_option("mode",
+                        color=(1.0, 1.0, 0.0),
+                        increase_func=self._set_mode,
+                        decrease_func=self._set_mode,
+                        maximum=0,
+                        wrap=True)
 
         self.opt_held = False
         self.opt_pressed = False
@@ -63,8 +77,7 @@ class Manager:
         self.options_layer = self.drawer.add_layer()
         for i in range(6):
             self.knot.set_pixel_alpha(i, 1.0)
-        for i in range(4):
-            self.knot.set_pixel_color(i, (1.0, 1.0, 1.0))
+        self.set_knot_color((1.0, 1.0, 1.0))
 
         if self.running:
             self._main_loop()
@@ -145,24 +158,30 @@ class Manager:
 
     def next_setting(self):
         print("next option")
+        self.options_setting += 1
+        if self.options_setting > len(self.options):
+            self.options_setting = 0
 
     def increase_setting(self):
         print("Increase")
-        if self.options_setting == OPTIONS.BRIGHTNESS:
-            self.drawer.overall_brightness += 0.05
-        if self.drawer.overall_brightness > 1.0:
-            self.drawer.overall_brightness = 1.0
+        self.options[self.options_setting].increase()
 
     def decrease_setting(self):
         print("Decrease")
-        if self.options_setting == OPTIONS.BRIGHTNESS:
-            self.drawer.overall_brightness -= 0.05
-        if self.drawer.overall_brightness < 0.05:
-            self.drawer.overall_brightness =0.05
+        self.options[self.options_setting].decrease()
+
+    def _set_brightness(self, integer):
+        self.drawer.overall_brightness = integer/ self.brightness_steps
+        if self.drawer.overall_brightness < self.min_brightness:
+            self.drawer.overall_brightness = self.min_brightness
+
+    def _set_mode(self, mode_num):
+        self.set_knot_color(MODE_COLORS[mode_num])
 
     def update(self):
         if int(time.time()) % 2:
-            self.options_layer.fill((1.0, 1.0, 1.0), end=4)
+            opt_color = self.options[self.options_setting].color
+            self.options_layer.fill(opt_color, end=4)
         else:
             self.options_layer.fill((0.0, 0.0, 0.0), end=6)
 
@@ -209,6 +228,13 @@ class Manager:
         if time.time() > STARTUP_TIME + 10:
             os.system("sudo poweroff")
 
+    def add_option(self, option_name, option_color, increase_func, decrease_func, maximum=10, wrap=False):
+        option = Option(option_name,option_color, increase_func, decrease_func, maximum, wrap)
+        self.options.append(option)
+
+    def set_knot_color(self, color):
+        for i in range(4):
+            self.knot.set_pixel_color(i, color)
 
 def color_wheel(pos):
     pos = pos % 1.0
