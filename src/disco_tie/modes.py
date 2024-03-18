@@ -63,13 +63,13 @@ class BounceMode(Mode):
                 continue
             if i < self.fade:
                 fadeval = i / self.fade
-                color = (channel * fadeval for channel in dot_color)
+                color = tuple(channel * fadeval for channel in dot_color)
             elif i > self.pos + self.width:
                 fadeval = self.pos + self.width + self.fade - i
-                color = (channel * fadeval for channel in dot_color)
+                color = tuple(channel * fadeval for channel in dot_color)
             else:
-                color = dot_color
-            self.drawer.set_pixel_color(i, tuple(color))
+                color = tuple(dot_color)
+            self.drawer.set_pixel_color(i, color)
 
 def color_wheel(pos):
     pos = pos % 1.0
