@@ -99,14 +99,3 @@ class Manager:
     def shutdown(self):
         self.clear_leds()
         # os.system("sudo poweroff")
-
-def color_wheel(pos):
-    pos = pos % 1.0
-    if pos < 1/3:
-        return (pos * 3, 1.0 - pos * 3, 0)
-    elif pos < 2/3:
-        pos -= 1/3
-        return (1.0 - pos * 3, 0, pos * 3)
-    else:
-        pos -= 2/3
-        return (0, pos * 3, 1.0 - pos * 3)
