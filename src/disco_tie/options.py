@@ -25,7 +25,7 @@ class Option:
     @classmethod
     def check_settings_file(cls):
         if cls.settings_data is None:
-            with open(SETTINGS_FILE, "r+") as f:
+            with open(SETTINGS_FILE, "a+") as f:
                 cls.settings_data = json.load(f)
         return  cls.settings_data
 
