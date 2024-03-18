@@ -2,7 +2,7 @@ import os
 from enum import Enum
 import json
 
-SETTINGS_FILE = os.path.join(__file__, "settings.json")
+SETTINGS_FILE = os.path.join(__file__.rsplit("/", 1)[0], "settings.json")
 
 
 
