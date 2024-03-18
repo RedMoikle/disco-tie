@@ -52,14 +52,12 @@ class Option:
 
     def increase(self):
         self.value += 1
-        print(self.value)
         if self.maximum is not None and self.value > self.maximum:
             if not self.wrap:
                 self.value = self.maximum
             else:
                 self.value = 0
-
-
+        print(self.value)
         self.save_setting()
         self.increase_func(self.value)
 
