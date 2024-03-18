@@ -4,11 +4,6 @@ class Mode:
         self.manager = manager
         self.drawer = manager.drawer
 
-    def step(self):
-        while True:
-            self.update()
-            yield
-
     def update(self):
         pass
 
@@ -16,6 +11,7 @@ class Mode:
 class RainbowMode(Mode):
     def __init__(self, manager):
         super(RainbowMode, self).__init__(manager)
+        self.name="Rainbow scroll"
         self.rainbow_offset = 0
         self.rainbow_speed = 1
         self.rainbow_width = 70
@@ -31,7 +27,7 @@ class RainbowMode(Mode):
         #    self.speed *= -1
         # self.current_pixel += self.speed
 
-        for i in range(self.led_count):
+        for i in range(self.drawer.led_count):
             self.drawer.set_pixel_color(i, color_wheel(i / self.rainbow_width + self.rainbow_offset))
         self.rainbow_offset += self.rainbow_speed
 

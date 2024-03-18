@@ -4,6 +4,7 @@ from enum import Enum
 
 from disco_tie.drawer import LightStrip
 from disco_tie.options import Option
+from disco_tie.modes import *
 STARTUP_TIME = time.time()
 
 MODE_COLORS = {0:(1,1,1)}
@@ -47,10 +48,6 @@ class Manager:
         self.blinker.blink()
         self.power_btn.when_held = self.shutdown
 
-        self.rainbow_offset = 0
-        self.rainbow_speed = 0.01
-        self.rainbow_width = self.led_count
-
         self.options_active = False
         self.options_activated = False
         self.options_setting = 0
@@ -63,7 +60,11 @@ class Manager:
         for i in range(6):
             self.knot.set_pixel_alpha(i, 1.0)
         self.set_knot_color((1.0, 1.0, 1.0))
+
         self.options = []
+        self.modes = [RainbowMode(self)]
+        self.selected_mode = 0
+
         self.add_option("brightness",
                         color=(1.0, 1.0, 1.0),
                         increase_func=self._set_brightness,
@@ -78,6 +79,7 @@ class Manager:
                         init_func=self._set_mode,
                         maximum=0,
                         wrap=True)
+
         if self.running:
             self._main_loop()
 
@@ -175,6 +177,7 @@ class Manager:
             self.drawer.overall_brightness = self.min_brightness
 
     def _set_mode(self, mode_num):
+        self.mode = mode_num
         self.set_knot_color(MODE_COLORS[mode_num])
 
     def update(self):
@@ -205,10 +208,8 @@ class Manager:
             if self.minus_pressed:
                 self.decrease_setting()
 
-        self.drawer.fill((0, 0, 0))
-        for i in range(self.led_count):
-            self.drawer.set_pixel_color(i, color_wheel(i / self.rainbow_width + self.rainbow_offset))
-        self.rainbow_offset += self.rainbow_speed
+        mode = self.modes[self.selected_mode]
+        mode.update()
 
     def clear_leds(self):
         self.blinker.off()
