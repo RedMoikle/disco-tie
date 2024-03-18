@@ -7,7 +7,7 @@ SETTINGS_FILE = "settings.json"
 
 class Option:
     settings_data = None
-    def __init__(self, setting, color, increase_func, decrease_func, maximum=10, wrap=False):
+    def __init__(self, setting, color, increase_func, decrease_func, init_func, maximum=10, wrap=False):
         self.setting = setting
 
         self.value = 0
@@ -17,8 +17,9 @@ class Option:
 
         self.increase_func = increase_func
         self.decrease_func = decrease_func
+        self.init_func = init_func
 
-        self.load_setting()
+        self.init_setting()
 
     @classmethod
     def check_settings_file(cls):
@@ -36,12 +37,18 @@ class Option:
         if self.value > self.maximum:
             self.value = self.maximum
             self.save_setting()
+        print(f"Loaded value: {self.setting}={self.value}")
+        print(self.value)
 
     def save_setting(self):
         data = self.check_settings_file()
         data["settings"][self.setting] = self.value
         with open(SETTINGS_FILE, "w") as f:
             json.dump(data, f)
+
+    def init_setting(self):
+        self.load_setting()
+        self.init_func()
 
     def increase(self):
         self.value += 1

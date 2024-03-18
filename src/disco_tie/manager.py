@@ -34,12 +34,14 @@ class Manager:
                         color=(1.0, 1.0, 1.0),
                         increase_func=self._set_brightness,
                         decrease_func=self._set_brightness,
+                        init_func=self._set_brightness,
                         maximum=self.brightness_steps,
                         wrap=False)
         self.add_option("mode",
                         color=(1.0, 1.0, 0.0),
                         increase_func=self._set_mode,
                         decrease_func=self._set_mode,
+                        init_func=self._set_mode,
                         maximum=0,
                         wrap=True)
 
