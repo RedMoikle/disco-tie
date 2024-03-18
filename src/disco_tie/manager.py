@@ -227,8 +227,8 @@ class Manager:
         if time.time() > STARTUP_TIME + 10:
             os.system("sudo poweroff")
 
-    def add_option(self, option_name, color, increase_func, decrease_func, maximum=10, wrap=False):
-        option = Option(option_name,color, increase_func, decrease_func, maximum, wrap)
+    def add_option(self, option_name, color, increase_func, decrease_func, init_func, maximum=10, wrap=False):
+        option = Option(option_name,color, increase_func, decrease_func, init_func, maximum, wrap)
         self.options.append(option)
 
     def set_knot_color(self, color):
