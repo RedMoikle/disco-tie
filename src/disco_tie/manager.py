@@ -225,6 +225,8 @@ class Manager:
         self.clear_leds()
         self.running = False
         if time.time() > STARTUP_TIME + 10:
+            print("Restarting in 5 seconds")
+            time.sleep(5)
             os.system("sudo poweroff")
 
     def add_option(self, option_name, color, increase_func, decrease_func, init_func, maximum=10, wrap=False):
