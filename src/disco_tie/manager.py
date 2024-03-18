@@ -1,13 +1,14 @@
 import time
 import os
-from enum import Enum
 
 from disco_tie.drawer import LightStrip
 from disco_tie.options import Option
 from disco_tie.modes import *
+
 STARTUP_TIME = time.time()
 
-MODE_COLORS = {0:(1,1,1)}
+MODE_COLORS = {0: (1, 1, 1),
+               1: (0.5, 0.5, 1)}
 
 
 class Manager:
@@ -30,7 +31,6 @@ class Manager:
                                  led_pin=18,
                                  led_frequency=800_000,
                                  overall_brightness=1.0, )
-
 
         self.opt_held = False
         self.opt_pressed = False
@@ -173,13 +173,13 @@ class Manager:
         self.options[self.options_setting].decrease()
 
     def _set_brightness(self, integer):
-        self.drawer.overall_brightness = integer/ self.brightness_steps
+        self.drawer.overall_brightness = integer / self.brightness_steps
         if self.drawer.overall_brightness < self.min_brightness:
             self.drawer.overall_brightness = self.min_brightness
 
     def _set_mode(self, mode_num):
         self.mode = mode_num
-        self.set_knot_color(MODE_COLORS[mode_num])
+        self.set_knot_color(MODE_COLORS.get(mode_num, (1, 1, 1)))
 
     def update(self):
         if int(time.time()) % 2:
@@ -232,7 +232,7 @@ class Manager:
             os.system("sudo poweroff")
 
     def add_option(self, option_name, color, increase_func, decrease_func, init_func, maximum=10, wrap=False):
-        option = Option(option_name,color, increase_func, decrease_func, init_func, maximum, wrap)
+        option = Option(option_name, color, increase_func, decrease_func, init_func, maximum, wrap)
         self.options.append(option)
 
     def set_knot_color(self, color):
