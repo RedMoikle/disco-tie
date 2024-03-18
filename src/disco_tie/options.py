@@ -41,6 +41,11 @@ class Option:
 
     def load_setting(self):
         data = self.check_settings_file()
+        if "settings" not in data:
+            data["settings"] = dict()
+        if self.setting not in data["settings"]:
+            data["settings"][self.setting] = self.value
+            self.save_setting()
         self.value = data["settings"][self.setting]
         if self.value < 0:
             self.value = 0
