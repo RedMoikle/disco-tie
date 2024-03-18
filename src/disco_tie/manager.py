@@ -62,7 +62,8 @@ class Manager:
         self.set_knot_color((1.0, 1.0, 1.0))
 
         self.options = []
-        self.modes = [RainbowMode(self)]
+        self.modes = [RainbowMode(self),
+                      BounceMode(self)]
         self.selected_mode = 0
 
         self.add_option("brightness",

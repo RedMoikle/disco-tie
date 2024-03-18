@@ -11,25 +11,65 @@ class Mode:
 class RainbowMode(Mode):
     def __init__(self, manager):
         super(RainbowMode, self).__init__(manager)
-        self.name="Rainbow scroll"
+        self.name = "Rainbow scroll"
         self.rainbow_offset = 0
         self.rainbow_speed = 1
         self.rainbow_width = 70
 
     def update(self):
-        # test anim
         self.drawer.fill((0, 0, 0))
-        # self.drawer.pixels[self.current_pixel] = (1.0, 0, 0)
-
-        # if self.current_pixel == 0 and self.speed < 0:
-        #    self.speed *= -1
-        # elif self.current_pixel == self.led_count - 1 and self.speed > 0:
-        #    self.speed *= -1
-        # self.current_pixel += self.speed
 
         for i in range(self.drawer.led_count):
             self.drawer.set_pixel_color(i, color_wheel(i / self.rainbow_width + self.rainbow_offset))
         self.rainbow_offset += self.rainbow_speed
+
+
+class BounceMode(Mode):
+    def __init__(self, manager):
+        super(BounceMode, self).__init__(manager)
+        self.name = "Bounce dot"
+        self.color_pos = 0
+        self.color_speed = 0
+        self.pos = 0
+        self.speed = 3
+        self.width = 5
+        self.fade = 3
+        self.glow_time = 6
+        self.current_glow = 0
+
+    def update(self):
+        if self.current_glow > 0:
+            self.current_glow -= 1
+        length = self.drawer.led_count
+        self.drawer.fill((0, 0, 0))
+
+        self.pos += self.speed
+        if self.pos < 0:
+            self.pos = 0
+            self.speed = -self.speed
+            self.current_glow = self.glow_time
+        if self.pos + self.width > length:
+            self.pos = length - self.width
+            self.speed = -self.speed
+            self.current_glow = self.glow_time
+        alpha = self.current_glow / self.glow_time
+
+        self.color_pos += self.color_speed
+        base_color = color_wheel(self.color_pos)
+
+        dot_color = tuple(channel * (1 - alpha) + alpha for channel in base_color)
+        for i in range(self.pos - self.fade, self.pos + self.width + self.fade):
+            if i < 0 or i >= length:
+                continue
+            if i < self.fade:
+                fadeval = i / fade
+                color = (channel * fadeval for channel in dot_color)
+            elif i > self.pos + self.width:
+                fadeval = self.pos + self.width + self.fade - i
+                color = (channel * fadeval for channel in dot_color)
+            else:
+                color = dot_color
+            self.drawer.set_pixel_color(i, color)
 
 
 def color_wheel(pos):
