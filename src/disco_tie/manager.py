@@ -8,9 +8,6 @@ STARTUP_TIME = time.time()
 
 MODE_COLORS = {0:(1,1,1)}
 
-class OPTIONS(Enum):
-    BRIGHTNESS = 0
-
 
 class Manager:
     def __init__(self, led_count=74, blinker=None, options_btn=None, minus_btn=None, plus_btn=None, power_btn=None,
@@ -68,7 +65,7 @@ class Manager:
 
         self.options_active = False
         self.options_activated = False
-        self.options_setting = OPTIONS.BRIGHTNESS
+        self.options_setting = 0
         self.options_last_press_time = None
         self.options_activated_time = None
 
