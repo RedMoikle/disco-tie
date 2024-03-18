@@ -29,21 +29,7 @@ class Manager:
                                  led_pin=18,
                                  led_frequency=800_000,
                                  overall_brightness=1.0, )
-        self.options = []
-        self.add_option("brightness",
-                        color=(1.0, 1.0, 1.0),
-                        increase_func=self._set_brightness,
-                        decrease_func=self._set_brightness,
-                        init_func=self._set_brightness,
-                        maximum=self.brightness_steps,
-                        wrap=False)
-        self.add_option("mode",
-                        color=(1.0, 1.0, 0.0),
-                        increase_func=self._set_mode,
-                        decrease_func=self._set_mode,
-                        init_func=self._set_mode,
-                        maximum=0,
-                        wrap=True)
+
 
         self.opt_held = False
         self.opt_pressed = False
@@ -77,7 +63,21 @@ class Manager:
         for i in range(6):
             self.knot.set_pixel_alpha(i, 1.0)
         self.set_knot_color((1.0, 1.0, 1.0))
-
+        self.options = []
+        self.add_option("brightness",
+                        color=(1.0, 1.0, 1.0),
+                        increase_func=self._set_brightness,
+                        decrease_func=self._set_brightness,
+                        init_func=self._set_brightness,
+                        maximum=self.brightness_steps,
+                        wrap=False)
+        self.add_option("mode",
+                        color=(1.0, 1.0, 0.0),
+                        increase_func=self._set_mode,
+                        decrease_func=self._set_mode,
+                        init_func=self._set_mode,
+                        maximum=0,
+                        wrap=True)
         if self.running:
             self._main_loop()
 
