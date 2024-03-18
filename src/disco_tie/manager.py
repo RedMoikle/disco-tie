@@ -78,7 +78,7 @@ class Manager:
                         increase_func=self._set_mode,
                         decrease_func=self._set_mode,
                         init_func=self._set_mode,
-                        maximum=0,
+                        maximum=1,
                         wrap=True)
 
         if self.running:

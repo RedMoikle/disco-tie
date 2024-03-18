@@ -13,8 +13,8 @@ class RainbowMode(Mode):
         super(RainbowMode, self).__init__(manager)
         self.name = "Rainbow scroll"
         self.rainbow_offset = 0
-        self.rainbow_speed = 1
-        self.rainbow_width = 70
+        self.rainbow_speed = 0.01
+        self.rainbow_width = self.drawer.led_count
 
     def update(self):
         self.drawer.fill((0, 0, 0))
