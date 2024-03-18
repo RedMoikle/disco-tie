@@ -156,7 +156,7 @@ class Manager:
     def next_setting(self):
         print("next option")
         self.options_setting += 1
-        if self.options_setting > len(self.options):
+        if self.options_setting >= len(self.options):
             self.options_setting = 0
 
     def increase_setting(self):
