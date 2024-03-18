@@ -4,6 +4,13 @@ import json
 
 SETTINGS_FILE = os.path.join(__file__.rsplit("/", 1)[0], "settings.json")
 
+DEFAULT_SETTINGS = """
+{
+"settings": {
+    "brightness":10,
+    "mode": 0
+    }
+}"""
 
 
 class Option:
@@ -25,8 +32,11 @@ class Option:
     @classmethod
     def check_settings_file(cls):
         if cls.settings_data is None:
-            with open(SETTINGS_FILE, "a+") as f:
-                cls.settings_data = json.load(f)
+            try:
+                with open(SETTINGS_FILE, "r+") as f:
+                    cls.settings_data = json.load(f)
+            except IOError:
+                cls.settings_data = DEFAULT_SETTINGS
         return  cls.settings_data
 
     def load_setting(self):
