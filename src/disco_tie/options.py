@@ -39,6 +39,7 @@ class Option:
 
     def increase(self):
         self.value += 1
+        print(self.value)
         if self.maximum is not None:
             if not self.wrap:
                 self.value = self.maximum
@@ -47,6 +48,7 @@ class Option:
 
         self.save_setting()
         self.increase_func(self.value)
+
 
     def decrease(self):
         self.value -= 1
@@ -57,7 +59,9 @@ class Option:
                 raise ValueError("Cannot wrap values with no maximum")
             else:
                 self.value = self.maximum + self.value - 1
+        print(self.value)
         self.save_setting()
         self.decrease_func(self.value)
+
 
 
