@@ -54,7 +54,6 @@ class Option:
             self.value = self.maximum
             self.save_setting()
         print(f"Loaded value: {self.setting}={self.value}")
-        print(self.value)
 
     def save_setting(self):
         data = self.check_settings_file()

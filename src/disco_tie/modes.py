@@ -31,10 +31,10 @@ class BounceMode(Mode):
         self.color_pos = 0
         self.color_speed = 0
         self.pos = 0
-        self.speed = 3
+        self.speed = 2
         self.width = 5
         self.fade = 3
-        self.glow_time = 6
+        self.glow_time = 10
         self.current_glow = 0
 
     def update(self):
