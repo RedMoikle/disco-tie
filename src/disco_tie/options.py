@@ -53,7 +53,7 @@ class Option:
     def increase(self):
         self.value += 1
         print(self.value)
-        if self.maximum is not None:
+        if self.maximum is not None and self.value > self.maximum:
             if not self.wrap:
                 self.value = self.maximum
             else:
