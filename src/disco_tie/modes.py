@@ -23,6 +23,20 @@ class RainbowMode(Mode):
             self.drawer.set_pixel_color(i, color_wheel(i / self.rainbow_width + self.rainbow_offset))
         self.rainbow_offset += self.rainbow_speed
 
+class RainbowMusic(Mode):
+    def __init__(self, manager):
+        super(RainbowMode, self).__init__(manager)
+        self.name = "Rainbow music"
+        self.rainbow_offset = 0
+        self.rainbow_speed = 0.01
+        self.rainbow_width = self.drawer.led_count
+
+    def update(self):
+        self.drawer.fill((0, 0, 0))
+
+        for i in range(self.drawer.led_count):
+            self.drawer.set_pixel_color(i, color_wheel(i / self.rainbow_width + self.rainbow_offset))
+        self.rainbow_offset += self.rainbow_speed
 
 class BounceMode(Mode):
     def __init__(self, manager):
