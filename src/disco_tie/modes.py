@@ -61,7 +61,7 @@ class BounceMode(Mode):
         for i in range(self.pos - self.fade, self.pos + self.width + self.fade):
             if i < 0 or i >= length:
                 continue
-            if self.pos - i < self.fade:
+            if i < self.pos:
                 fadeval = ((i - self.pos + self.fade + 1) / (self.fade + 1))**2
                 color = tuple(channel * fadeval for channel in dot_color)
             elif i > self.pos + self.width:
