@@ -29,7 +29,7 @@ class BounceMode(Mode):
         super(BounceMode, self).__init__(manager)
         self.name = "Bounce dot"
         self.color_pos = 0
-        self.color_speed = 0
+        self.color_speed = 0.01
         self.pos = 0
         self.speed = 2
         self.width = 5
