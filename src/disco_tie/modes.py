@@ -37,6 +37,8 @@ class RainbowMusic(Mode):
         if not self.manager.fft_buckets:
             return
         for i in range(self.drawer.led_count):
+            if len(self.manager.fft_buckets) <= i:
+                continue
             bucket = self.manager.fft_buckets[i]
             brightness = min((max(0, bucket - 1000) ** 0.5) /2000, 1.0)
             col = color_wheel(i / self.rainbow_width + self.rainbow_offset)
