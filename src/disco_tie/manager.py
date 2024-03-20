@@ -9,7 +9,8 @@ from disco_tie.audio import AudioSampler, calculate_fft, get_frequency_buckets
 STARTUP_TIME = time.time()
 
 MODE_COLORS = {0: (1, 1, 1),
-               1: (0.5, 0.5, 1)}
+               1: (0.5, 0.5, 1),
+               2: (0,0,0,0)}
 
 AUDIO_DEVICE = 0
 
