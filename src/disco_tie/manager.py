@@ -4,12 +4,14 @@ import os
 from disco_tie.drawer import LightStrip
 from disco_tie.options import Option
 from disco_tie.modes import *
+from disco_tie.audio import AudioSampler, calculate_fft, get_frequency_buckets
 
 STARTUP_TIME = time.time()
 
 MODE_COLORS = {0: (1, 1, 1),
                1: (0.5, 0.5, 1)}
 
+AUDIO_DEVICE = 3
 
 class Manager:
     def __init__(self, led_count=74, blinker=None, options_btn=None, minus_btn=None, plus_btn=None, power_btn=None,
@@ -43,6 +45,9 @@ class Manager:
         self.minus_released = False
         self.power_held = False
         self.audio_sample = None
+        self.fft_sample = None
+        self.fft_buckets = None
+        self.audio_sampler = AudioSampler(AUDIO_DEVICE, 44100, 1024)
 
         self.deltatime = 1 / self.framerate
         self.blinker.blink()
@@ -63,8 +68,11 @@ class Manager:
 
         self.options = []
         self.modes = [RainbowMode(self),
-                      BounceMode(self)]
+                      BounceMode(self),
+                      RainbowMusic(self),]
         self.selected_mode = 0
+        self.lower_freq = 50
+        self.upper_freq = 6000
 
         self.add_option("brightness",
                         color=(1.0, 1.0, 1.0),
@@ -78,8 +86,22 @@ class Manager:
                         increase_func=self._set_mode,
                         decrease_func=self._set_mode,
                         init_func=self._set_mode,
-                        maximum=1,
+                        maximum=2,
                         wrap=True)
+        self.add_option("lower_frequency",
+                        color=(1.0, 0.0, 0.0),
+                        increase_func = self._set_lower_freq,
+                        decrease_func= self._set_lower_freq,
+                        init_func=self._set_lower_freq,
+                        maximum=20,
+                        wrap=False)
+        self.add_option("upper_frequency",
+                        color=(0.0, 0.0, 1.0),
+                        increase_func = self._set_lower_freq,
+                        decrease_func= self._set_lower_freq,
+                        init_func=self._set_lower_freq,
+                        maximum=20,
+                        wrap=False)
 
         if self.running:
             self._main_loop()
@@ -140,7 +162,9 @@ class Manager:
             self.minus_released = False
 
     def _get_audio(self):
-        self.audio_sample = [0]
+        self.audio_sample = self.audio_sampler.read()
+        self.fft_sample = calculate_fft(self.audio_sample, 44100, self.lower_freq, self.upper_freq)
+        self.fft_buckets = get_frequency_buckets(self.fft_sample, self.led_count)
 
     def _draw(self):
         if self.drawer is not None:
@@ -181,7 +205,10 @@ class Manager:
         self.selected_mode = mode_num
         self.set_knot_color(MODE_COLORS.get(mode_num, (1, 1, 1)))
         print(f"Switching to {self.modes[self.selected_mode].name} mode")
-
+    def _set_lower_freq(self, freq_index):
+        self.lower_freq = 1.4**freq_index+49 + 5.7*freq_index
+    def _set_upper_freq(self, freq_index):
+        self.upper_freq = 1.65 ** freq_index+516 + 30*freq_index
     def update(self):
         if int(time.time()) % 2:
             opt_color = self.options[self.options_setting].color

@@ -35,7 +35,11 @@ class RainbowMusic(Mode):
         self.drawer.fill((0, 0, 0))
 
         for i in range(self.drawer.led_count):
-            self.drawer.set_pixel_color(i, color_wheel(i / self.rainbow_width + self.rainbow_offset))
+            bucket = self.manager.fft_buckets[i]
+            brightness = min((max(0, bucket - 1000) ** 0.5) /2000, 1.0)
+            col = color_wheel(i / self.rainbow_width + self.rainbow_offset)
+            final_color = (ch * brightness for ch in col)
+            self.drawer.set_pixel_color(i, final_color)
         self.rainbow_offset += self.rainbow_speed
 
 class BounceMode(Mode):

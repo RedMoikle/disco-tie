@@ -102,7 +102,7 @@ def calculate_fft(data, sample_rate, lower_freq=20, upper_freq=20000):
     return magnitude_spectrum
 
 
-def get_frequency_buckets(fft_data, num_buckets, lower_freq=20, upper_freq=20000):
+def get_frequency_buckets(fft_data, num_buckets):
     buckets = [[] for _ in range(num_buckets)]
     for i, data in enumerate(fft_data):
         position = math.log(i + 1, len(fft_data))
