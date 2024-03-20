@@ -34,6 +34,8 @@ class RainbowMusic(Mode):
     def update(self):
         self.drawer.fill((0, 0, 0))
 
+        if not self.manager.fft_buckets:
+            return
         for i in range(self.drawer.led_count):
             bucket = self.manager.fft_buckets[i]
             brightness = min((max(0, bucket - 1000) ** 0.5) /2000, 1.0)
