@@ -86,7 +86,7 @@ class Manager:
                         increase_func=self._set_mode,
                         decrease_func=self._set_mode,
                         init_func=self._set_mode,
-                        maximum=2,
+                        maximum=len(self.modes)-1,
                         wrap=True)
         self.add_option("lower_frequency",
                         color=(1.0, 0.0, 0.0),
