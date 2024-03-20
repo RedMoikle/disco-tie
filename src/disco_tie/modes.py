@@ -44,7 +44,7 @@ class RainbowMusic(Mode):
             col = color_wheel(i / self.rainbow_width + self.rainbow_offset)
             final_color = (ch * brightness for ch in col)
             self.drawer.set_pixel_color(i, final_color)
-        self.rainbow_offset += self.rainbow_speed
+        #self.rainbow_offset += self.rainbow_speed
 
 class BounceMode(Mode):
     def __init__(self, manager):
