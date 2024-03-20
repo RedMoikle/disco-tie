@@ -50,6 +50,8 @@ class AudioSampler:
     def _audio_thread(self):
         while self._running:
             data = self._read_audio_stream()
+            if data is None:
+                return
             # Convert binary data to numpy array of int16 data type
             output_data = np.frombuffer(data, dtype=np.int16)
             with self.thread_lock:
