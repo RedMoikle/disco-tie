@@ -43,11 +43,7 @@ class RainbowMusic(Mode):
             bucket_index, bucket_value = finder.get_value(led_position)
             bucket_position = bucket_index / (len(self.manager.fft_buckets)-1)
             brightness = min((max(0, bucket_value - 1000) ** 0.5) / 2000, 1.0)
-            final_color = (ch * brightness for ch in bucket_color)
-            # if len(self.manager.fft_buckets) <= i:
-            #     continue
-            # bucket = self.manager.fft_buckets[i]
-            # brightness =
+
             col = color_wheel(bucket_position / self.rainbow_width + self.rainbow_offset)
             final_color = (ch * brightness for ch in col)
             self.drawer.set_pixel_color(i, final_color)
