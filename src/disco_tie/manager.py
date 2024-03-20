@@ -163,6 +163,8 @@ class Manager:
 
     def _get_audio(self):
         self.audio_sample = self.audio_sampler.read()
+        if self.audio_sample is None:
+            return
         self.fft_sample = calculate_fft(self.audio_sample, 44100, self.lower_freq, self.upper_freq)
         self.fft_buckets = get_frequency_buckets(self.fft_sample, self.led_count)
 
