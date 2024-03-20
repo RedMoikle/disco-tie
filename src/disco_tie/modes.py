@@ -25,7 +25,7 @@ class RainbowMode(Mode):
 
 class RainbowMusic(Mode):
     def __init__(self, manager):
-        super(RainbowMode, self).__init__(manager)
+        super(RainbowMusic, self).__init__(manager)
         self.name = "Rainbow music"
         self.rainbow_offset = 0
         self.rainbow_speed = 0.01
