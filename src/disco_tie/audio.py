@@ -43,10 +43,7 @@ class AudioSampler:
         self.pya.terminate()
 
     def _read_audio_stream(self):
-        try:
-            return self.audio_stream.read(self.chunk_size)
-        except OSError as e:
-            return
+        return self.audio_stream.read(self.chunk_size, exception_on_overflow=False)
     def _audio_thread(self):
         while self._running:
             data = self._read_audio_stream()

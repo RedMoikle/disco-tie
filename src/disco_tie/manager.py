@@ -11,7 +11,7 @@ STARTUP_TIME = time.time()
 MODE_COLORS = {0: (1, 1, 1),
                1: (0.5, 0.5, 1)}
 
-AUDIO_DEVICE = 1
+AUDIO_DEVICE = 3
 
 class Manager:
     def __init__(self, led_count=74, blinker=None, options_btn=None, minus_btn=None, plus_btn=None, power_btn=None,
