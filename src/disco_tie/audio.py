@@ -1,9 +1,68 @@
 import math
+import threading
+import traceback
+import time
 
 import pyaudio
 import numpy as np
 import matplotlib.pyplot as plt
-import time
+
+
+class AudioSampler:
+    def __init__(self, device_index, sample_rate=44100, chunk_size=1024):
+        self.device_index = device_index
+        self.sample_rate = sample_rate
+        self.chunk_size = chunk_size
+        self._current_sample = np.ndarray(0)
+        self._last_sample = None
+        self.thread_lock = threading.Lock()
+
+        self._running = True
+        self.pya = pyaudio.PyAudio()
+        try:
+            self.audio_stream = self.pya.open(
+                    format=pyaudio.paInt16,  # Format of the audio data (16-bit integer)
+                    channels=1,  # Number of audio channels (1 for mono, 2 for stereo)
+                    rate=self.sample_rate,  # Sampling rate in Hz
+                    input=True,  # Open stream for input
+                    frames_per_buffer=self.chunk_size,  # Number of frames per buffer (chunk size)
+                    input_device_index=self.device_index,
+            )
+        except Exception as e:
+            print(traceback.print_tb(e))
+        self.audio_thread = threading.Thread(target=self._audio_thread)
+        self.audio_thread.daemon = True
+        self.audio_thread.start()
+
+    def stop(self):
+        self._running = False
+        self.audio_thread.join()
+        # Stop and close the audio stream
+        self.audio_stream.stop_stream()
+        self.audio_stream.close()
+        # Terminate PyAudio object
+        self.pya.terminate()
+
+    def _read_audio_stream(self):
+        return self.audio_stream.read(self.chunk_size)
+
+    def _audio_thread(self):
+        while self._running:
+            data = self._read_audio_stream()
+            # Convert binary data to numpy array of int16 data type
+            output_data = np.frombuffer(data, dtype=np.int16)
+            with self.thread_lock:
+                self._current_sample = output_data
+
+    def read(self):
+        with self.thread_lock:
+            output = self._current_sample[:]
+        if output.size == 0:
+            return None
+
+        if output is not None:
+            self._last_sample = output
+        return self._last_sample
 
 
 def plot_audio_data(data, sample_rate):
@@ -18,37 +77,6 @@ def plot_audio_data(data, sample_rate):
     plt.ylabel('Amplitude')
     plt.grid(True)
     plt.show()
-
-
-def read_microphone(sample_rate=44100, chunk_size=1024):
-    # Initialize PyAudio object
-    audio = pyaudio.PyAudio()
-
-    # Open audio stream for microphone input
-    stream = audio.open(
-            format=pyaudio.paInt16,  # Format of the audio data (16-bit integer)
-            channels=1,  # Number of audio channels (1 for mono, 2 for stereo)
-            rate=sample_rate,  # Sampling rate in Hz
-            input=True,  # Open stream for input
-            frames_per_buffer=chunk_size,  # Number of frames per buffer (chunk size)
-            input_device_index=3
-    )
-
-    while True:
-        try:
-            # Read audio data from the stream
-            data = stream.read(chunk_size)
-            # Convert binary data to numpy array of int16 data type
-            yield np.frombuffer(data, dtype=np.int16)
-            time.sleep(0.02)
-        except KeyboardInterrupt:
-            break
-
-    # Stop and close the audio stream
-    stream.stop_stream()
-    stream.close()
-    # Terminate PyAudio object
-    audio.terminate()
 
 
 def calculate_fft(data, sample_rate, lower_freq=20, upper_freq=20000):
@@ -73,11 +101,12 @@ def calculate_fft(data, sample_rate, lower_freq=20, upper_freq=20000):
 
     return magnitude_spectrum
 
+
 def get_frequency_buckets(fft_data, num_buckets, lower_freq=20, upper_freq=20000):
     buckets = [[] for _ in range(num_buckets)]
     for i, data in enumerate(fft_data):
-        position = math.log(i+1, len(fft_data))
-        bucket_n = int(min(num_buckets-1, position * num_buckets))
+        position = math.log(i + 1, len(fft_data))
+        bucket_n = int(min(num_buckets - 1, position * num_buckets))
         buckets[bucket_n].append(data)
 
     average_buckets = []
@@ -85,46 +114,57 @@ def get_frequency_buckets(fft_data, num_buckets, lower_freq=20, upper_freq=20000
         if not bucket:
             continue
         average_buckets.append(sum(bucket) / len(bucket))
-    #average_buckets = [sum(b) / len(b) for b in buckets if b]
+    # average_buckets = [sum(b) / len(b) for b in buckets if b]
     return average_buckets
 
 
-def plot_bar_graph(magnitude_spectrum, sample_rate, lower_freq=20, upper_freq=20000):
-    # Calculate frequency bins
-    freq_bins = np.linspace(lower_freq, upper_freq, len(magnitude_spectrum))
-
-    # Clear the current figure to update it with new data
-    plt.clf()
-
-    # Plot bar graph
-    plt.bar(freq_bins, magnitude_spectrum, width=(upper_freq - lower_freq) / len(magnitude_spectrum), align='edge')
-    plt.title('FFT Magnitude Spectrum')
-    plt.xlabel('Frequency (Hz)')
-    plt.ylabel('Magnitude')
-    plt.grid(True)
-    plt.ylim(0, 100000)
-
-    # Pause briefly to update the plot
-    plt.pause(0.01)
-
 # Example usage:
 if __name__ == "__main__":
+    def ascii_graph(data, display_values=True, multiplier=1, min_height=10):
+        max_value = int(max(max(data) * multiplier, min_height))
+        num_bars = len(data)
+
+        # Iterate through each row from the top to bottom
+        for row in range(max_value, 0, -1):
+            # Print each column for the current row
+            for col in range(num_bars):
+                value = int(data[col] * multiplier)
+                if value >= row:
+                    print("#", end="")  # Print '#' if the value at this index is greater or equal to the current row
+                else:
+                    print(" ", end="")  # Print a space if the value at this index is less than the current row
+            print()  # Move to the next row after printing all columns
+
+        # Print the horizontal axis (index)
+        print("")
+        print("-" * num_bars)
+        if display_values:
+            for i in range(num_bars):
+                print(i, end=" ")
+        print()  # Move to the next line after printing the horizontal axis
+
+
+    current_max = 0
     # Create a generator for reading microphone data
-    mic_reader = read_microphone()
+    sampler = AudioSampler(3, 44100, 1024)
     # Loop indefinitely to read microphone data and perform FFT
     last_time = time.time()
-    for audio_data in mic_reader:
-        #print(f"get_time = {time.time() - last_time}")
+    while True:
+        audio_data = sampler.read()
+        if audio_data is None:
+            continue
+        current_max -= 10
         # Calculate FFT for the current chunk of audio data
         fft_data = calculate_fft(audio_data, 44100, 50, 6000)
-        bucket_data = get_frequency_buckets(fft_data, 10)
-        #bucket_data = [i ** 5.5 for i in range(10)]
-        print(max(bucket_data))
-        print("\n\n")
-        scaled = [(b**0.7/ 100) for b in bucket_data]
-        print("\n".join(["|" * int(s) for s in scaled]))
-        print(max(scaled))
-        #time.sleep(0.001)
+        bucket_data = get_frequency_buckets(fft_data, 20)
+        scaled = [(math.log(b, 1.1)) for b in bucket_data]
         # Plot summarized FFT data
-        #plot_bar_graph(bucket_data, 44100, 50, 6000)
+        modified_spec = [max(0, m - 1000) ** 0.5 for m in bucket_data]
+        current_max = max(current_max, max(modified_spec))
+        # plot_bar_graph(modified_spec, 44100, 50, 6000, current_max)
+        ascii_graph(modified_spec, display_values=False, multiplier=0.02, min_height=max(10, current_max * 0.01))
+        print(f"time: {time.time() - last_time:.4f}")
         last_time = time.time()
+
+    print("stopping sampler")
+    sampler.stop()
